@@ -3,6 +3,7 @@
 set -euo pipefail
 
 CONFIG_FILE="$HOME/.previewrc"
+VERSION="2.0.1"
 
 usage() {
   cat <<EOF
@@ -17,6 +18,7 @@ Usage: $(basename "$0") [port] [options] [-- extra http-server args]
   --cert PATH           Path to a TLS certificate (used with --https).
   --key PATH            Path to a TLS private key (used with --https).
   -h, --help            Show this help and exit.
+  -v, --version         Show version and exit.
 
   Port and directory choices are remembered in $CONFIG_FILE
   and offered as defaults next time.
@@ -43,6 +45,10 @@ while [ $# -gt 0 ]; do
   case "$1" in
     -h|--help)
       usage
+      exit 0
+      ;;
+    -v|--version)
+      echo "$(basename "$0") $VERSION"
       exit 0
       ;;
     -d|--dir)
@@ -93,9 +99,19 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-if [ "$use_https" = true ] && { [ -z "$cert_path" ] || [ -z "$key_path" ]; }; then
-  echo "Error: --https requires both --cert and --key" >&2
-  exit 1
+if [ "$use_https" = true ]; then
+  if [ -z "$cert_path" ] || [ -z "$key_path" ]; then
+    echo "Error: --https requires both --cert and --key" >&2
+    exit 1
+  fi
+  if [ ! -f "$cert_path" ]; then
+    echo "Error: certificate file \"$cert_path\" does not exist." >&2
+    exit 1
+  fi
+  if [ ! -f "$key_path" ]; then
+    echo "Error: key file \"$key_path\" does not exist." >&2
+    exit 1
+  fi
 fi
 
 # Colors (only when output is a real terminal)
@@ -135,10 +151,12 @@ load_config() {
   saved_port=""
   saved_dir=""
   if [ -f "$CONFIG_FILE" ]; then
-    # shellcheck disable=SC1090
-    source "$CONFIG_FILE"
-    saved_port="${PORT:-}"
-    saved_dir="${DIR:-}"
+    while IFS='=' read -r key value; do
+      case "$key" in
+        PORT) saved_port="$value" ;;
+        DIR) saved_dir="$value" ;;
+      esac
+    done < "$CONFIG_FILE"
   fi
 }
 
@@ -147,6 +165,7 @@ save_config() {
 PORT=$1
 DIR=$2
 EOF
+  chmod 600 "$CONFIG_FILE"
 }
 
 load_config
@@ -161,7 +180,8 @@ if [ "$quiet" = false ]; then
   echo -e "${GREEN}██╔═══╝ ██╔══██╗██╔══╝  ╚██╗ ██╔╝██║██╔══╝  ██║███╗██║${RESET}"
   echo -e "${GREEN}██║     ██║  ██║███████╗ ╚████╔╝ ██║███████╗╚███╔███╔╝${RESET}"
   echo -e "${GREEN}╚═╝     ╚═╝  ╚═╝╚══════╝  ╚═══╝  ╚═╝╚══════╝ ╚══╝╚══╝${RESET}"
-  echo -e "${BLUE}Version 2.0.0${RESET}"
+  # To change version, use the VERSION variable on line 6 instead of line 184.
+  echo -e "${BLUE}Version $VERSION${RESET}"
   echo ""
 
   # WHITE text

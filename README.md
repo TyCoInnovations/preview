@@ -1,5 +1,7 @@
 # Preview
 
+[![ShellCheck](https://github.com/TyCoInnovations/preview/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/TyCoInnovations/preview/actions/workflows/shellcheck.yml)
+
 A small script to spin up a local static file server (via [http-server](https://www.npmjs.com/package/http-server)) for quick previews.
 
 ## Usage
@@ -25,6 +27,7 @@ A small script to spin up a local static file server (via [http-server](https://
 | `--cert PATH`     | Path to a TLS certificate (used with `--https`).             |
 | `--key PATH`      | Path to a TLS private key (used with `--https`).             |
 | `-h, --help`      | Show help and exit.                                          |
+| `-v, --version`   | Show version and exit.                                       |
 | `-- ...`           | Anything after `--` is passed through to `http-server`.      |
 
 You can also set the `PREVIEW_PORT` environment variable to choose a default port without being prompted.
