@@ -1,6 +1,7 @@
 # Preview
 
 [![ShellCheck](https://github.com/TyCoInnovations/preview/actions/workflows/shellcheck.yml/badge.svg)](https://github.com/TyCoInnovations/preview/actions/workflows/shellcheck.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A small script to spin up a local static file server (via [http-server](https://www.npmjs.com/package/http-server)) for quick previews.
 
